@@ -4,66 +4,71 @@ require 'octokit'
 require 'yaml'
 require 'pp'
 
-# Fiidhub
+module Config
+  def config
+    YAML.load_file("#{File.dirname(__FILE__)}/../config/config.yml")
+  end
+end
+
 class Fiidhub
-  attr_accessor :config
-  def initialize
-    @config = YAML.load_file("#{File.dirname(__FILE__)}/../config/config.yml")
-  end
+  # RSS feeds
+  class Rss
+    include Config
+    def snapshot_path
+      "#{File.dirname(__FILE__)}/../#{config['fiidhub']['tmp_path']}/#{config['fiidhub']['rss_snapshot']}"
+    end
 
-  def rss_snapshot_path
-    "#{File.dirname(__FILE__)}/../#{@config['fiidhub']['tmp_path']}/#{@config['fiidhub']['rss_snapshot']}"
-  end
+    def snapshot
+      unless File.exist?(snapshot_path)
+        File.open(snapshot_path, 'w+') do |file|
+          file << open("#{config['feeds']['url']}").read
+        end
+      end
+      RSS::Parser.parse(File.open(snapshot_path, 'r'))
+    end
 
-  def rss_snapshot
-    unless File.exist?(rss_snapshot_path)
-      File.open(rss_snapshot_path, 'w+') do |file|
-        file << open("#{@config['feeds']['url']}").read
+    def current
+      RSS::Parser.parse(open("#{config['feeds']['url']}"))
+    end
+
+    def update_snapshot
+      File.delete(snapshot_path)
+      snapshot
+    end
+
+    def snapshot_items
+      snapshot.items.map do |item|
+        {
+          pubDate: item.pubDate,
+          title: item.title,
+          link: item.link,
+          description: item.description
+        }
       end
     end
-    RSS::Parser.parse(File.open(rss_snapshot_path, 'r'))
-  end
 
-  def rss_current
-    RSS::Parser.parse(open("#{@config['feeds']['url']}"))
-  end
-  alias_method :rss, :rss_current
+    def current_items
+      current.items.map do |item|
+        {
+          pubDate: item.pubDate,
+          title: item.title,
+          link: item.link,
+          description: item.description
+        }
+      end
+    end
 
-  def update_rss_snapshot
-    File.delete(rss_snapshot_path)
-    rss_snapshot
-  end
-
-  def rss_snapshot_items
-    rss_snapshot.items.map do |item|
-    {
-      pubDate: item.pubDate,
-      title: item.title,
-      link: item.link,
-      description: item.description
-    }
+    def updated_items
+      current_items - snapshot_items
     end
   end
 
-  def rss_current_items
-    rss_current.items.map do |item|
-    {
-      pubDate: item.pubDate,
-      title: item.title,
-      link: item.link,
-      description: item.description
-    }
-    end
-  end
-
-  def rss_updated_items
-    rss_current_items - rss_snapshot_items
-  end
-
+  # RSS item
   class RssItem
+    include Config
     attr_accessor :pubDate, :title, :link, :description
     def initialize(args)
-      args.each do |k,v|
+      args.each do |k, v|
         instance_variable_set("@#{k}", v) unless v.nil?
       end
     end

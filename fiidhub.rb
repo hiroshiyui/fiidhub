@@ -4,13 +4,13 @@ require 'logger'
 
 logger = Logger.new('fiidhub.log')
 
-fiidhub = Fiidhub.new
-unless fiidhub.rss_updated_items.empty?
-  fiidhub.rss_updated_items.each do |updated_item|
-    rss_item = Fiidhub::RssItem.new(updated_item)
-    logger.info("New article: #{rss_item.title}")
+fiidhub = Fiidhub::Rss.new
+unless fiidhub.updated_items.empty?
+  fiidhub.updated_items.each do |updated_item|
+    item = Fiidhub::RssItem.new(updated_item)
+    logger.info("New article: #{item.title}")
   end
 
   logger.info("Update RSS feeds snapshot.")
-  #fiidhub.update_rss_snapshot
+  fiidhub.update_snapshot
 end
