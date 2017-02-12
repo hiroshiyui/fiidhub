@@ -14,12 +14,16 @@ GEM
     powerpack (0.1.1)
     public_suffix (2.0.5)
     rainbow (2.2.1)
+    rake (12.0.0)
+    rcodetools (0.8.5.0)
     rubocop (0.47.1)
       parser (>= 2.3.3.1, < 3.0)
       powerpack (~> 0.1)
       rainbow (>= 1.99.1, < 3.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
+    ruby-debug-ide (0.6.0)
+      rake (>= 0.8.1)
     ruby-progressbar (1.8.1)
     sawyer (0.8.1)
       addressable (>= 2.3.5, < 2.6)
@@ -31,7 +35,9 @@ PLATFORMS
 
 DEPENDENCIES
   octokit (~> 4.6, >= 4.6.2)
+  rcodetools
   rubocop (~> 0.47.1)
+  ruby-debug-ide
 
 BUNDLED WITH
    1.14.3
