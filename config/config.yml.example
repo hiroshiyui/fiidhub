@@ -1,0 +1,9 @@
+feeds:
+  url: 'https://www.archlinux.org/feeds/news/'
+github:
+  access_token:
+  repo: 'linux-taiwan/arch.linux.org.tw'
+  tags: 'news-translation'
+fiidhub:
+  tmp_path: 'tmp/'
+  rss_snapshot: 'rss.xml'
