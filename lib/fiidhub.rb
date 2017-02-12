@@ -59,5 +59,13 @@ class Fiidhub
   def rss_updated_items
     rss_current_items - rss_snapshot_items
   end
-end
 
+  class RssItem
+    attr_accessor :pubDate, :title, :link, :description
+    def initialize(args)
+      args.each do |k,v|
+        instance_variable_set("@#{k}", v) unless v.nil?
+      end
+    end
+  end
+end
