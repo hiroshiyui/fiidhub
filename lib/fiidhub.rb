@@ -2,6 +2,7 @@ require 'open-uri'
 require 'rss'
 require 'octokit'
 require 'yaml'
+require 'pp'
 
 # Fiidhub
 class Fiidhub
@@ -10,8 +11,11 @@ class Fiidhub
     @config = YAML.load_file("#{File.dirname(__FILE__)}/../config/config.yml")
   end
 
+  def rss_snapshot_path
+    "#{File.dirname(__FILE__)}/../#{@config['fiidhub']['tmp_path']}/#{@config['fiidhub']['rss_snapshot']}"
+  end
+
   def rss_snapshot
-    rss_snapshot_path = "#{File.dirname(__FILE__)}/../#{@config['fiidhub']['tmp_path']}/#{@config['fiidhub']['rss_snapshot']}"
     unless File.exist?(rss_snapshot_path)
       File.open(rss_snapshot_path, 'w+') do |file|
         file << open("#{@config['feeds']['url']}").read
@@ -25,22 +29,31 @@ class Fiidhub
   end
   alias_method :rss, :rss_current
 
+  def update_rss_snapshot
+    File.delete(rss_snapshot_path)
+    rss_snapshot
+  end
+
   def rss_snapshot_items
-    rss_snapshot.items.map { |item| {
+    rss_snapshot.items.map do |item|
+    {
       pubDate: item.pubDate,
       title: item.title,
       link: item.link,
       description: item.description
-    } }
+    }
+    end
   end
 
   def rss_current_items
-    rss_current.items.map { |item| {
+    rss_current.items.map do |item|
+    {
       pubDate: item.pubDate,
       title: item.title,
       link: item.link,
       description: item.description
-    } }
+    }
+    end
   end
 
   def rss_updated_items
