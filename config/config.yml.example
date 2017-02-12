@@ -1,9 +1,9 @@
 feeds:
   url: 'https://www.archlinux.org/feeds/news/'
 github:
-  access_token:
+  access_token: YOUR_GITHUB_PERSONAL_ACCESS_TOKEN
   repo: 'linux-taiwan/arch.linux.org.tw'
-  tags: 'news-translation'
+  tags: ['news-translation']
 fiidhub:
   tmp_path: 'tmp/'
   rss_snapshot: 'rss.xml'

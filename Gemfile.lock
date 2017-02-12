@@ -4,9 +4,13 @@ GEM
     addressable (2.5.0)
       public_suffix (~> 2.0, >= 2.0.2)
     ast (2.3.0)
+    erubis (2.7.0)
     faraday (0.11.0)
       multipart-post (>= 1.2, < 3)
+    mini_portile2 (2.1.0)
     multipart-post (2.0.0)
+    nokogiri (1.7.0.1)
+      mini_portile2 (~> 2.1.0)
     octokit (4.6.2)
       sawyer (~> 0.8.0, >= 0.5.3)
     parser (2.4.0.0)
@@ -34,6 +38,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  erubis (~> 2.7)
+  nokogiri (~> 1.6, >= 1.6.7.2)
   octokit (~> 4.6, >= 4.6.2)
   rcodetools
   rubocop (~> 0.47.1)
