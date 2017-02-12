@@ -4,6 +4,7 @@ require 'octokit'
 require 'yaml'
 require 'pp'
 
+# Read configuration from config.yml
 module Config
   def config
     YAML.load_file("#{File.dirname(__FILE__)}/../config/config.yml")
@@ -21,14 +22,14 @@ class Fiidhub
     def snapshot
       unless File.exist?(snapshot_path)
         File.open(snapshot_path, 'w+') do |file|
-          file << open("#{config['feeds']['url']}").read
+          file << open((config['feeds']['url']).to_s).read
         end
       end
       RSS::Parser.parse(File.open(snapshot_path, 'r'))
     end
 
     def current
-      RSS::Parser.parse(open("#{config['feeds']['url']}"))
+      RSS::Parser.parse(open((config['feeds']['url']).to_s))
     end
 
     def update_snapshot

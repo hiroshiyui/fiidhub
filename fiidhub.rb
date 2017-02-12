@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 require_relative 'lib/fiidhub'
 require 'logger'
 
@@ -11,6 +12,6 @@ unless fiidhub.updated_items.empty?
     logger.info("New article: #{item.title}")
   end
 
-  logger.info("Update RSS feeds snapshot.")
+  logger.info('Update RSS feeds snapshot.')
   fiidhub.update_snapshot
 end

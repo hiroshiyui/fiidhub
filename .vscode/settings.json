@@ -1,10 +1,7 @@
 // 既定の設定とユーザー設定を上書きするには、このファイル内に設定を挿入します
 {
   "ruby.lint": {
-    "rubocop": {
-        "lint": true
-    },
+    "rubocop": true,
     "ruby": true //Runs ruby -wc
-  },
-  "ruby.linter.run": "onSave"
+  }
 }
