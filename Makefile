@@ -1,5 +1,5 @@
 install:
-	bundle install --without=development
+	bundle install
 
 install_dev:
-	bundle install
+	bundle install --with=development
