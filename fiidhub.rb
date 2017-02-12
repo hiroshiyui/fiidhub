@@ -2,7 +2,7 @@
 require_relative 'lib/fiidhub'
 require 'logger'
 
-logger = Logger.new('fiidhub.log')
+logger = Logger.new("#{File.dirname(__FILE__)}/fiidhub.log")
 
 fiidhub = Fiidhub::Rss.new
 unless fiidhub.updated_items.empty?
