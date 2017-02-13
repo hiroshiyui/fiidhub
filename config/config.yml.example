@@ -5,7 +5,7 @@ github:
   repo: 'linux-taiwan/arch.linux.org.tw'
   labels: ['news-translation']
 fiidhub:
-  tmp_path: 'tmp/'
+  tmp_path: 'tmp'
   rss_snapshot: 'rss.xml'
   filename_path_prefix: '_posts/'
   filename_path_postfix: '.markdown'
