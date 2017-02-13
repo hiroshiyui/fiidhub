@@ -5,19 +5,24 @@ require 'yaml'
 require 'nokogiri'
 require 'erubis'
 require 'time'
+require 'logger'
 require 'pp'
 
 # Read configuration from config.yml
-module Config
+module Utility
   def config
     YAML.load_file("#{File.dirname(__FILE__)}/../config/config.yml")
+  end
+
+  def logger
+    Logger.new("#{File.dirname(__FILE__)}/../fiidhub.log")
   end
 end
 
 class Fiidhub
   # RSS feeds
   class Rss
-    include Config
+    include Utility
     def snapshot_path
       "#{File.dirname(__FILE__)}/../#{config['fiidhub']['tmp_path']}/#{config['fiidhub']['rss_snapshot']}"
     end
@@ -36,6 +41,7 @@ class Fiidhub
     end
 
     def update_snapshot
+      logger.info('Update RSS feeds snapshot.')
       File.delete(snapshot_path)
       snapshot
     end
@@ -69,22 +75,29 @@ class Fiidhub
 
   # RSS item
   class RssItem
-    include Config
-    attr_accessor :pubDate, :title, :link, :description, :branch
+    include Utility
+    attr_accessor :pubDate, :title, :link, :description, :normalized_title
 
     def initialize(args)
       args.each do |k, v|
         instance_variable_set("@#{k}", v) unless v.nil?
       end
-
+      @repo = config['github']['repo']
+      @labels = config['github']['labels']
       Octokit.access_token = config['github']['access_token']
+      normalized_title
+      prepare_labels
     end
 
     def git_file_content
       @datetime = @pubDate.iso8601
       template = File.read("#{File.dirname(__FILE__)}/../templates/item.erb")
       erb = Erubis::Eruby.new(template)
-      erb.result(binding())
+      erb.result(binding)
+    end
+
+    def git_file_path
+      "#{config['fiidhub']['filename_path_prefix']}#{@pubDate.strftime('%Y-%m-%d')}-#{@normalized_title}#{config['fiidhub']['filename_path_postfix']}"
     end
 
     def normalized_title
@@ -93,38 +106,62 @@ class Fiidhub
         undef: :replace,
         replace: ''
       }
-      @title.encode(Encoding.find('ASCII'), encode_options)
-            .gsub(/\s+/, '-')
-            .downcase
+      @normalized_title = @title.encode(Encoding.find('ASCII'), encode_options)
+                                .gsub(/\s+/, '-')
+                                .downcase
+      logger.info("Normalized title: '#{@normalized_title}'.")
+      @normalized_title
     end
 
     def branch_name
-      "news/#{@pubDate.strftime('%Y%m%d')}-#{normalized_title}"
+      "news/#{@pubDate.strftime('%Y%m%d')}-#{@normalized_title}"
     end
 
     def branch_ref
-      "heads/news/#{@pubDate.strftime('%Y%m%d')}-#{normalized_title}"
+      "heads/news/#{@pubDate.strftime('%Y%m%d')}-#{@normalized_title}"
     end
 
     def create_git_branch
-      # TODO: 可能要處理一下已經存在的同名 branch
-      sha = Octokit.ref(config['github']['repo'], "heads/master")[:object][:sha]
-      @branch = Octokit.create_ref(config['github']['repo'], branch_ref, sha)
+      delete_git_branch if Octokit.refs(@repo, 'heads').find { |head| head[:ref].include?(branch_ref) }
+      from_master_sha = Octokit.ref(@repo, 'heads/master')[:object][:sha]
+      Octokit.create_ref(@repo, branch_ref, from_master_sha)
+      logger.info("Create branch ref. #{branch_ref}")
     end
 
     def create_git_file
-      # TODO: 可能也要處理一下撞名的檔案…
-      Octokit.create_content(
-        config['github']['repo'],
-        "_posts/#{@pubDate.strftime('%Y-%m-%d')}-#{normalized_title}-TEST.markdown",
-        "Add news article that to be translated: '#{@title}'.",
-        git_file_content,
-        :branch => branch_name
-      )
+      if Octokit.contents(@repo, ref: branch_ref, path: config['fiidhub']['filename_path_prefix']).find { |c| c[:path].include?(git_file_path) }
+        logger.info("Repo already has '#{git_file_path}', skip.")
+      else
+        Octokit.create_content(
+          @repo,
+          git_file_path,
+          "Add news article that to be translated: '#{@title}'.",
+          git_file_content,
+          branch: branch_name
+        )
+        logger.info("Create file '#{git_file_path}'.")
+      end
     end
 
     def delete_git_branch
-      Octokit.delete_ref(config['github']['repo'], branch_ref)
+      Octokit.delete_ref(@repo, branch_ref)
+    end
+
+    def prepare_labels
+      existed_labels = Octokit.labels(@repo)
+      @labels.each do |label|
+        unless existed_labels.find { |existed_label| existed_label[:name] == label }
+          Octokit.add_label(@repo, label)
+        end
+      end
+    end
+
+    def create_pull_request
+      create_git_branch
+      create_git_file
+      pull_request = Octokit.create_pull_request(@repo, 'master', branch_name, "WIP: Translate '#{@title}'", "Please translate '#{@title}' (in `#{git_file_path}`)")
+      Octokit.add_labels_to_an_issue(@repo, pull_request[:number], @labels)
+      logger.info("Create pull request ##{pull_request[:number]}")
     end
   end
 end

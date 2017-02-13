@@ -9,4 +9,5 @@ group :development do
   gem 'rubocop', '~> 0.47.1'
   gem 'ruby-debug-ide'
   gem 'rcodetools'
+  gem 'pry', '~> 0.10.4'
 end
