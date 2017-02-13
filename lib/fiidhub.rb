@@ -166,9 +166,13 @@ class Fiidhub
     def create_pull_request
       create_git_branch
       create_git_file
-      pull_request = Octokit.create_pull_request(@repo, 'master', branch_name, "WIP: Translate '#{@title}'", pull_request_content)
-      Octokit.add_labels_to_an_issue(@repo, pull_request[:number], @labels)
-      logger.info("Create pull request ##{pull_request[:number]}")
+      if Octokit.compare(@repo, 'master', branch_name)[:commits].empty?
+        logger.info('No diff commits to create a pull request. (Maybe duplicated filename?)')
+      else
+        pull_request = Octokit.create_pull_request(@repo, 'master', branch_name, "WIP: Translate '#{@title}'", pull_request_content)
+        Octokit.add_labels_to_an_issue(@repo, pull_request[:number], @labels)
+        logger.info("Create pull request ##{pull_request[:number]}")
+      end
     end
   end
 end
