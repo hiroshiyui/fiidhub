@@ -7,6 +7,7 @@ require 'erubis'
 require 'time'
 require 'logger'
 require 'pp'
+require 'pry'
 
 # Read configuration from config.yml
 module Utility
@@ -91,7 +92,7 @@ class Fiidhub
 
     def git_file_content
       @datetime = @pubDate.iso8601
-      template = File.read("#{File.dirname(__FILE__)}/../templates/item.erb")
+      template = File.read("#{File.dirname(__FILE__)}/../templates/post.erb")
       erb = Erubis::Eruby.new(template)
       erb.result(binding)
     end
@@ -156,10 +157,16 @@ class Fiidhub
       end
     end
 
+    def pull_request_content
+      template = File.read("#{File.dirname(__FILE__)}/../templates/pull_request.erb")
+      erb = Erubis::Eruby.new(template)
+      erb.result(binding)
+    end
+
     def create_pull_request
       create_git_branch
       create_git_file
-      pull_request = Octokit.create_pull_request(@repo, 'master', branch_name, "WIP: Translate '#{@title}'", "Please translate '#{@title}' (in `#{git_file_path}`)")
+      pull_request = Octokit.create_pull_request(@repo, 'master', branch_name, "WIP: Translate '#{@title}'", pull_request_content)
       Octokit.add_labels_to_an_issue(@repo, pull_request[:number], @labels)
       logger.info("Create pull request ##{pull_request[:number]}")
     end
