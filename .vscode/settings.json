@@ -3,5 +3,8 @@
   "ruby.lint": {
     "rubocop": true,
     "ruby": true //Runs ruby -wc
+  },
+  "files.associations": {
+    "**/config/*.yml.example": "yaml"
   }
 }

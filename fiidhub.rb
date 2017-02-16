@@ -3,6 +3,7 @@
 require_relative 'lib/fiidhub'
 
 include Utility
+logger.info("Starting Fiidhub...")
 
 fiidhub = Fiidhub::Rss.new
 unless fiidhub.updated_items.empty?

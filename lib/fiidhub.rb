@@ -16,7 +16,7 @@ module Utility
   end
 
   def logger
-    Logger.new("#{File.dirname(__FILE__)}/../fiidhub.log")
+    Logger.new("#{File.dirname(__FILE__)}/../log/fiidhub.log")
   end
 end
 
