@@ -7,7 +7,6 @@ require 'erubis'
 require 'time'
 require 'logger'
 require 'pp'
-require 'pry'
 
 # Read configuration from config.yml
 module Utility
