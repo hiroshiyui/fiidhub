@@ -17,7 +17,7 @@ build_docker: git_archive
 	docker tag fiidhub:$(TIMESTAMP_TAG) fiidhub:latest
 
 run_docker: setup_dir
-	docker run --rm -i -t \
+	docker run --rm \
 	-u $(USER) \
 	-v $(PWD)/fiidhub_tmp:/home/$(USER)/fiidhub/tmp \
 	-v $(PWD)/fiidhub_log:/home/$(USER)/fiidhub/log \
