@@ -25,3 +25,6 @@ run_docker:
 	-v $(PWD)/fiidhub_log:/home/$(USER)/fiidhub/log \
 	--name fiidhub-runner \
 	fiidhub
+
+clean_docker_old_images:
+	docker rmi $(docker images -qf before=fiidhub:latest fiidhub)
