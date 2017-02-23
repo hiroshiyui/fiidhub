@@ -10,7 +10,6 @@ WORKDIR /home/$user/fiidhub
 
 COPY ./tmp/fiidhub.tar /tmp/fiidhub.tar
 RUN tar xvf /tmp/fiidhub.tar
-RUN mkdir tmp log
 COPY ./config/config.yml config/config.yml
 RUN bundle install --without=development
 
