@@ -1,4 +1,5 @@
 TIMESTAMP_TAG = $(shell date '+%Y%m%d%H%M%S')
+USER = $(shell id -u -n)
 
 install: setup_dir
 	bundle install
