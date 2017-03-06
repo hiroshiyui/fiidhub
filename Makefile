@@ -20,6 +20,7 @@ build_docker: git_archive
 run_docker:
 	mkdir -p $(PWD)/fiidhub_tmp $(PWD)/fiidhub_log &&\
 	docker run --rm \
+	-e LANG=C.UTF-8 \
 	-u $(USER) \
 	-v $(PWD)/fiidhub_tmp:/home/$(USER)/fiidhub/tmp \
 	-v $(PWD)/fiidhub_log:/home/$(USER)/fiidhub/log \
