@@ -28,4 +28,4 @@ run_docker:
 	fiidhub
 
 clean_docker_old_images:
-	docker rmi $(docker images -qf before=fiidhub:latest fiidhub)
+	docker rmi $(shell docker images -qf before=fiidhub:latest fiidhub)
