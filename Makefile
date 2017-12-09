@@ -1,6 +1,9 @@
 TIMESTAMP_TAG = $(shell date '+%Y%m%d%H%M%S')
 USER = $(shell id -u -n)
 
+help:
+	@echo "Fiidhub - Pipe RSS feeds to GitHub pull requests"
+
 install:
 	bundle install
 
