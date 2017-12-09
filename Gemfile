@@ -6,7 +6,7 @@ gem 'nokogiri', '~> 1.6', '>= 1.6.7.2'
 gem 'erubis', '~> 2.7'
 
 group :development do
-  gem 'rubocop', '~> 0.47.1'
+  gem 'rubocop', '~> 0.51.0'
   gem 'ruby-debug-ide'
   gem 'rcodetools'
   gem 'pry', '~> 0.10.4'
