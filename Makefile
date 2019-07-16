@@ -1,6 +1,8 @@
 TIMESTAMP_TAG = $(shell date '+%Y%m%d%H%M%S')
 USER = $(shell id -u -n)
 
+.PHONY: help install install_dev test_xml git_archive build_docker run_docker clean_docker_old_images
+
 help:
 	@echo "Fiidhub - Pipe RSS feeds to GitHub pull requests"
 
