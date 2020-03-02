@@ -2,7 +2,7 @@
 source "https://rubygems.org"
 
 gem 'octokit', '~> 4.6', '>= 4.6.2'
-gem 'nokogiri', '~> 1.8.5'
+gem "nokogiri", ">= 1.10.8"
 gem 'erubis', '~> 2.7'
 
 group :development do
